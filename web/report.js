@@ -327,7 +327,7 @@
     const strip = document.getElementById('stop-strip');
     (D.dns.stop_frames || []).forEach(f => {
       const fig = document.createElement('figure');
-      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}" loading="lazy"><figcaption>${f.cap}</figcaption>`;
+      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}"><figcaption>${f.cap}</figcaption>`;
       strip.appendChild(fig);
     });
   }
@@ -337,11 +337,11 @@
     const strip = document.getElementById('burst-strip');
     (D.dns.burst_frames || []).forEach(f => {
       const fig = document.createElement('figure');
-      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}" loading="lazy"><figcaption>${f.cap}</figcaption>`;
+      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}"><figcaption>${f.cap}</figcaption>`;
       strip.appendChild(fig);
     });
     const cap = document.getElementById('burst-cap');
-    const parts = bursts.map(b => `半径 ${(b.Rb * 1e3).toFixed(2)} mm の泡: 先頭の粒の速さ ${b.v_sim.toFixed(1)} m/s（Deike ほかの式 ${b.v_theory.toFixed(1)} m/s）、粒の半径 ${b.r_sim_um.toFixed(0)} µm（式 ${b.r_theory_um.toFixed(0)} µm）`);
-    cap.textContent += ' ' + parts.join('。') + '。';
+    const parts = bursts.map(b => `半径 ${(b.Rb * 1e3).toFixed(2)} mm の泡では、先頭の粒は半径 ${b.r_sim_um.toFixed(0)} µm・${b.v_sim.toFixed(1)} m/s（式では ${b.r_theory_um.toFixed(0)} µm・${b.v_theory.toFixed(1)} m/s）。DNS のほうが細く速いジェットになりましたが、空気抵抗込みで届く高さは ${b.h_sim_cm.toFixed(1)} cm と ${b.h_theory_cm.toFixed(1)} cm でほぼ同じです`);
+    cap.textContent += ' ' + parts.join('。') + '。泡の初期形状を球で近似していることと、解像度（泡の半径に 48 セル）が速さの差の原因と考えられます。';
   }
 })();

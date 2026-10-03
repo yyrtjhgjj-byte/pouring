@@ -129,9 +129,11 @@ ol.steps b { font-weight: 700; }
 .fig h3 { font-size: 16px; }
 .fig .cap { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .render-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-@media (max-width: 760px) { .render-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+#burst-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 760px) { .render-strip, #burst-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .render-strip figure { margin: 0; display: grid; gap: 4px; }
 .render-strip img { border-radius: 4px; display: block; width: 100%; height: auto; background: var(--scene); }
+#burst-strip img { background: #f4f7fa; }
 .render-strip figcaption { font-size: 12px; color: var(--muted); }
 video { width: 100%; max-width: 760px; border-radius: 6px; background: var(--scene); display: block; }
 .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 22px; }
