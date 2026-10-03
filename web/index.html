@@ -225,7 +225,7 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <li><b>レバーはそっと開ける（0.2 秒くらいかけて）。</b>勢いよく開けると水柱の先頭に太い塊ができ、それが水面に深い穴を掘ります。</li>
         <li><b>水が増えるにつれてコップを起こしていく。</b>目安は 120 mL で <span data-fill="sched:120">30</span>°、160 mL で <span data-fill="sched:160">20</span>°、200 mL で <span data-fill="sched:200">7</span>°。それ以上は直立で構いません（このころには水面がノズルに近く、落下距離が短いため）。</li>
         <li><b>直立に戻したら、水流をコップの内壁ぎわに落とす。</b>タンブラーは上に向かって少し広がっているので、ぎりぎりまで寄せると水流が壁をかすめて膜になります。</li>
-        <li><b>傾けられないときは、水面をノズルから <span data-fill="model:Hstar">10</span> cm 以内に保つ。</b>それより遠いと、水柱が速く、表面も波打って、空気を急に巻き込み始めます。</li>
+        <li><b>傾けられないときは、水面をノズルから 8 cm 以内に、ただし縁はノズルから 2 cm 以上離す。</b>10 cm を超えると、注ぎ始めの水滴がノズルまで跳ね上がり、泡も急に増えます。近づけるぶんには泡はほとんどできないので、下限を決めるのは「コップがノズルに触れないこと」です。</li>
       </ol>
       <div class="tscroll"><table id="strategy-table" aria-label="注ぎ方ごとの比較（120 mL 入りのタンブラーに 150 mL 足す）"></table></div>
       <p class="muted" style="font-size:12.5px">表は半経験モデルの計算値（120 mL 入りの 335 mL タンブラーに、流量 1.5 L/分で 150 mL 足す場合）。数字そのものより桁の違いを見てください。</p>
@@ -254,7 +254,7 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
       </div>
       <div class="figs">
         <div class="fig"><h3>落下距離が長いほど、水滴は高く飛ぶ</h3><div id="chart-dns"></div>
-          <p class="cap">斜めの線より上の点は、ノズルの高さまで水滴が届く計算。ノズルに水滴が付くと、そこから雑菌が増える原因になります。</p></div>
+          <p class="cap">斜めの線より上の点は、ノズルの高さまで水滴が届く計算。7 cm と 10 cm の間で急に激しくなります。ノズルに水滴が付くと、そこから雑菌が増える原因になります。いちばん高い粒は格子でぎりぎり表せる細かい粒なので、上位 10% の値もあわせて見てください。</p></div>
         <div class="fig"><h3>閉じ込められる空気も増える</h3><div id="chart-dns-air"></div>
           <p class="cap">この空気が後で浮いてきて弾け、次の「細かい飛沫」の元になります。</p></div>
       </div>
@@ -289,7 +289,7 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <div class="render-strip" id="burst-strip"></div>
         <p class="cap" id="burst-cap">水面の泡が弾けると、穴の底から細いジェットが立ち、先端がちぎれて粒になります。</p>
       </div>
-      <p class="callout">まっすぐ注ぐ場合の妥協点は、<b>水面をノズルから 6〜<span data-fill="model:Hstar">10</span> cm</b> に置くこと。6 cm より近いと弾けた飛沫がノズルに届きうるうえ、縁がノズルに触れやすくなり、<span data-fill="model:Hstar">10</span> cm より遠いと泡が急に増えます。注ぎ始めの水滴の柱も、落下距離が短いほど低くなります。</p>
+      <p class="callout">つまり「近づけるか、離すか」への答えは、<b>近づける側に寄せる</b>です。水面をノズルから 8 cm 以内にすれば、注ぎ始めの水滴はほとんど上がらず（DNS では 7 cm までは 2 cm ほど、10 cm で急に激しくなる）、泡もできません（泡が増え始めるのは約 <span data-fill="model:Hstar">10</span> cm から）。近づけすぎて困るのはコップがノズルに触れることだけなので、縁とノズルの間に 2 cm ほど空ければ十分です。</p>
     </section>
 
     <section class="sec" id="stop" aria-labelledby="h-stop" data-needs="dns:stop">

@@ -233,9 +233,10 @@
     const R = D.dns.startup.slice().sort((a, b) => a.H - b.H);
     lineChart(host5, {
       series: [
-        { name: '注ぎ始めに打ち上がる水滴の最高到達点（DNS）', color: '--s-orange', points: R.map(r => [r.H * 100, r.apex * 100]), marker: true, label: false },
+        { name: 'いちばん高く飛んだ粒', color: '--s-orange', points: R.map(r => [r.H * 100, r.apex * 100]), marker: true, label: false },
+        { name: '上位 10% の粒', color: '--s-blue', points: R.map(r => [r.H * 100, r.apex_p90 * 100]), marker: true, label: false },
       ],
-      xDomain: [0, 22], yDomain: [0, Math.max(22, ...R.map(r => r.apex * 100 + 2))],
+      xDomain: [0, 22], yDomain: [0, Math.min(50, Math.max(22, ...R.map(r => r.apex * 100 + 2)))],
       diag: { label: 'ノズルの高さ' }, rightPad: 90,
       xLabel: 'ノズルから水面までの落下距離 H [cm]', yLabel: '水面からの高さ [cm]',
       unitX: ' cm', unitY: ' cm', xFmt: v => v.toFixed(0), yDigits: 1, aria: 'DNS の水滴到達高さ',

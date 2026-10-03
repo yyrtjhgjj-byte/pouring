@@ -55,6 +55,8 @@ def main():
                "air_final_mL": res["final_bubble_vol_mm3"] / 1000, "crown_mm": res["max_crown_h"] * 1e3,
                "worth_mm": res["max_worthington_h"] * 1e3, "t_apex": res["max_drop"].get("t", None),
                "w_max": res["max_drop"].get("w", 0.0), "drop_r_um": res["max_drop"].get("r_eq", 0) * 1e6,
+               "apex_p90": res.get("apex_p90", 0.0), "apex_p50": res.get("apex_p50", 0.0),
+               "n_above_nozzle": res.get("n_above_nozzle", 0),
                "stop_apex": res.get("stop_apex", 0.0), "stop_worth_mm": res.get("max_worthington_after_stop", 0.0) * 1e3}
         if "_stop" in d.name:
             row["worth_mm"] = row["stop_worth_mm"]
