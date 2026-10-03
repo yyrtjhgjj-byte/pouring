@@ -1,0 +1,159 @@
+<title>コップ注水ラボ</title>
+<meta name="description" content="ウォーターサーバーで水を足すとき、飛沫を出さない注ぎ方を流体シミュレーションで探す">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* レイアウト: 実験台 — 上に「装置」（暗いシミュレーター窓＋操作盤）、下に読み物の一段組 */
+:root {
+  --paper: #f1f4f5; --panel: #ffffff; --ink: #14212b; --muted: #566773; --rule: #d3dce1;
+  --accent: #0b6e99; --accent-ink: #ffffff; --ok: #2b8a3e; --warn: #b7791f; --bad: #c2410c;
+  --chip: #e4edf1;
+  --f-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --f-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --scene: #0d1b2a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d151c; --panel: #131e27; --ink: #e2eaef; --muted: #92a3af; --rule: #24323d;
+    --accent: #4fb3e8; --accent-ink: #06121a; --ok: #69db7c; --warn: #f2c14e; --bad: #ff8a5c; --chip: #1b2a35;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d151c; --panel: #131e27; --ink: #e2eaef; --muted: #92a3af; --rule: #24323d;
+  --accent: #4fb3e8; --accent-ink: #06121a; --ok: #69db7c; --warn: #f2c14e; --bad: #ff8a5c; --chip: #1b2a35;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.75; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 800; text-wrap: balance; line-height: 1.3; margin: 0; }
+h1 { font-size: clamp(28px, 4.2vw, 44px); letter-spacing: 0.02em; }
+h2 { font-size: clamp(22px, 2.6vw, 28px); }
+h3 { font-size: 18px; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 17px; max-width: 62ch; color: var(--ink); }
+.muted { color: var(--muted); }
+header.top { display: grid; gap: 10px; margin-bottom: 22px; }
+
+/* 装置 */
+.rig { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .rig { grid-template-columns: 1fr; } }
+.viewport { background: var(--scene); border-radius: 6px; overflow: hidden; position: relative; }
+#sim-canvas { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+.vp-foot { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; font-family: var(--f-mono); font-size: 11.5px; color: #a9bccb; background: #0a1622; flex-wrap: wrap; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.preset { font: inherit; font-size: 13px; line-height: 1.35; padding: 8px 6px; border-radius: 5px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+.preset[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.preset small { display: block; color: var(--muted); font-size: 11px; }
+.preset.rec { border-color: color-mix(in srgb, var(--ok) 60%, var(--rule)); }
+.pour-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+#pour { font: inherit; font-weight: 700; font-size: 16px; padding: 10px 22px; border-radius: 999px; border: none; background: var(--accent); color: var(--accent-ink); cursor: pointer; min-width: 9em; touch-action: none; }
+#pour[aria-pressed="true"] { background: var(--bad); color: #fff; }
+.btn-plain { font: inherit; font-size: 13px; padding: 6px 10px; border-radius: 5px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ctl { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 4.8em; gap: 8px; align-items: center; font-size: 13.5px; }
+.ctl output { font-family: var(--f-mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.ctl input[type="range"] { width: 100%; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; flex-wrap: wrap; }
+.seg label { font-size: 12.5px; padding: 4px 9px; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg input:checked + span { color: var(--accent); font-weight: 700; }
+.seg label:has(input:checked) { background: var(--chip); }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+.row { display: flex; gap: 10px 16px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+.note { font-size: 12px; color: var(--warn); min-height: 1em; }
+details.more summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.more[open] { display: grid; gap: 10px; }
+
+/* 計測 */
+.meters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+.m { display: grid; gap: 0; border-top: 1px solid var(--rule); padding-top: 6px; min-width: 0; }
+.m .k { font-size: 11.5px; color: var(--muted); letter-spacing: 0.02em; }
+.m .v { font-family: var(--f-mono); font-size: 20px; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.m .v small { font-size: 11.5px; color: var(--muted); margin-left: 3px; }
+.gauge { grid-column: 1 / -1; display: grid; gap: 4px; }
+.gauge .track { height: 10px; background: var(--chip); border-radius: 5px; position: relative; overflow: hidden; }
+.gauge .track::after { content: ""; position: absolute; left: 66.7%; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: 0.55; }
+#gauge-fill { height: 100%; width: 0; border-radius: 5px; background: var(--ok); transition: width 0.15s linear; }
+#gauge-fill[data-state="warn"] { background: var(--warn); }
+#gauge-fill[data-state="bad"] { background: var(--bad); }
+.gauge .lab { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); gap: 8px; }
+#gauge-label { font-weight: 700; color: var(--ink); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) { #gauge-fill { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Water-server pouring lab · 実寸・2D FLIP ＋ 気泡破裂モデル</span>
+    <h1>コップ注水ラボ</h1>
+    <p class="lede">水が入ったコップに、ウォーターサーバーから水を足す。そのとき立つ「水滴の柱」と「水面の細かい飛沫」をどうすれば抑えられるか。下の装置で、コップの高さと傾きを変えて試せます。</p>
+  </header>
+
+  <section class="rig" aria-label="注水シミュレーター">
+    <div class="viewport">
+      <canvas id="sim-canvas" aria-label="ノズルからコップに水が注がれる様子の断面シミュレーション。コップはドラッグで動かせます"></canvas>
+      <div class="vp-foot"><span>コップはドラッグで動かせます · 気泡は 3 倍、飛沫は 6 倍に拡大して表示</span><span id="fps"></span></div>
+    </div>
+
+    <div class="panel">
+      <div class="presets" role="group" aria-label="注ぎ方のプリセット">
+        <button class="preset" data-preset="far" aria-pressed="true">遠くから中央へ<small>隙間 12 cm</small></button>
+        <button class="preset" data-preset="near" aria-pressed="false">近づけて中央へ<small>隙間 1 cm</small></button>
+        <button class="preset rec" data-preset="best" aria-pressed="false">傾けて壁沿い<small>30° · そっと開栓</small></button>
+      </div>
+
+      <div class="pour-row">
+        <button id="pour" aria-pressed="false">注ぐ</button>
+        <label class="row"><input type="checkbox" id="latch" checked> 押すたびに切り替え</label>
+        <button class="btn-plain" id="play">一時停止</button>
+      </div>
+
+      <div class="meters" aria-live="off">
+        <div class="m"><span class="k">落下距離 H（ノズル→最初に当たる面）</span><span class="v"><span id="r-H">—</span><small>cm</small></span></div>
+        <div class="m"><span class="k">当たる速さ U</span><span class="v"><span id="r-U">—</span><small>m/s</small></span></div>
+        <div class="gauge">
+          <div class="lab"><span>水面に突っ込む速さ <b id="r-Ueff">—</b> m/s ／ 巻き込みが始まる速さ <b id="r-Ve">—</b> m/s</span><span id="gauge-label"></span></div>
+          <div class="track"><div id="gauge-fill"></div></div>
+          <div class="lab"><span id="r-mode">注いでいません</span><span>縦線 = 巻き込み開始</span></div>
+        </div>
+        <div class="m"><span class="k">できる気泡</span><span class="v"><span id="r-bub">0</span><small>個/秒</small></span></div>
+        <div class="m"><span class="k">気泡が弾けて出る飛沫</span><span class="v"><span id="r-drop">0</span><small>個/秒</small></span></div>
+        <div class="m"><span class="k">ノズルに届いた飛沫（累計）</span><span class="v"><span id="r-noz">0</span><small>個</small></span></div>
+        <div class="m"><span class="k">縁より高く飛んだ飛沫（累計）</span><span class="v"><span id="r-rim">0</span><small>個</small></span></div>
+      </div>
+
+      <div class="ctl"><label for="gap">ノズルと縁の隙間</label><input type="range" id="gap" min="0.5" max="15" step="0.5" value="12"><output id="gap-val"></output></div>
+      <div class="ctl"><label for="tilt">コップの傾き</label><input type="range" id="tilt" min="0" max="45" step="1" value="0"><output id="tilt-val"></output></div>
+      <div class="note" id="tilt-note"></div>
+      <div class="row">
+        <span>狙う場所</span>
+        <span class="seg"><label><input type="radio" name="aim" value="center" checked><span>水面の中央</span></label><label><input type="radio" name="aim" value="wall"><span>内壁（水面の少し上）</span></label></span>
+        <label class="row"><input type="checkbox" id="auto-aim" checked> 自動で位置合わせ</label>
+      </div>
+
+      <details class="more">
+        <summary>サーバーと水の条件・表示</summary>
+        <div class="ctl"><label for="tau">レバーを開く時間</label><input type="range" id="tau" min="0.03" max="0.5" step="0.01" value="0.06"><output id="tau-val"></output></div>
+        <div class="ctl"><label for="flow">流量</label><input type="range" id="flow" min="1.0" max="2.5" step="0.1" value="1.5"><output id="flow-val"></output></div>
+        <div class="row"><span>水温</span>
+          <span class="seg"><label><input type="radio" name="temp" value="6"><span>冷水 6℃</span></label><label><input type="radio" name="temp" value="20" checked><span>常温 20℃</span></label><label><input type="radio" name="temp" value="85"><span>温水 85℃</span></label></span>
+        </div>
+        <div class="row"><span>再生</span>
+          <span class="seg"><label><input type="radio" name="speed" value="0.125"><span>1/8</span></label><label><input type="radio" name="speed" value="0.25" checked><span>1/4</span></label><label><input type="radio" name="speed" value="0.5"><span>1/2</span></label><label><input type="radio" name="speed" value="1"><span>実時間</span></label></span>
+        </div>
+        <label class="row"><input type="checkbox" id="level-hold" checked> 水位を保つ（2D では実物より速く満杯になるため、注いだ分を底から抜く）</label>
+        <label class="row"><input type="checkbox" id="show-states"> 水の状態を色分け（緑 = 空中の水柱、橙 = 壁を伝う膜）</label>
+        <div class="row"><button class="btn-plain" id="clear-counts">計数をリセット</button><button class="btn-plain" id="reset">水を入れ直す</button></div>
+      </details>
+    </div>
+  </section>
+</div>
+
+<script src="sim.js"></script>
+<script src="app.js"></script>

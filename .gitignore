@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+pourphys/.cache/
+dns/build/
+dns/runs/
+*.bin
+.DS_Store
+node_modules/
