@@ -80,6 +80,15 @@ def main():
         fd = res["first_axis_drop"]
         dns["burst"].append({"name": d.name, "Rb": Rb, "v_sim": fd["w"], "r_sim_um": fd["r_eq"] * 1e6,
                              "t_ms": fd["t"] * 1e3, "v_theory": float(Vd), "r_theory_um": float(rd) * 1e6})
+    # 図（存在するものだけ）
+    frames = [("r3d_stop14_160ms.png", "160 ms · 尻尾が吸い込まれる", "流れを止めて 10 ミリ秒後。水柱の尻尾が円錐状に細くなって水面に吸い込まれる"),
+              ("r3d_stop14_190ms.png", "190 ms · 真ん中に小さな柱", "真ん中に小さな柱が立ち、先端から粒がちぎれる"),
+              ("r3d_stop14_200ms.png", "200 ms · 粒が真上へ", "ちぎれた粒が真上に飛ぶ"),
+              ("r3d_stop14_215ms.png", "215 ms · 水滴の列", "真ん中の上に水滴が一列に並んで上がっていく")]
+    dns["stop_frames"] = [{"src": f"media/{f}", "cap": c, "alt": al} for f, c, al in frames if (MEDIA / f).exists()]
+    bframes = sorted(MEDIA.glob("burst_R*_*.png"))
+    dns["burst_frames"] = [{"src": f"media/{f.name}", "cap": f.stem.split("_")[-1].replace("us", " µs").replace("ms", " ms"),
+                            "alt": "泡の破裂の断面"} for f in bframes]
     vfile = ROOT / "results" / "dns_validation.json"
     if vfile.exists():
         dns["validation"] = json.load(open(vfile))

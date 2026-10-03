@@ -274,6 +274,7 @@
       if (field === 'w_max') return r.w_max.toFixed(1);
       if (field === 'air_mL') return r.air_mL < 1 ? r.air_mL.toFixed(2) : r.air_mL.toFixed(1);
       if (field === 'U') return r.U.toFixed(2);
+      if (field === 'stop_apex_cm') { const v = r.stop_apex * 100; return v < 10 ? v.toFixed(1) : v.toFixed(0); }
       return String(r[field]);
     },
   };

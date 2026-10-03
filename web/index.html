@@ -219,12 +219,13 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
     <section class="sec answer" id="answer" aria-labelledby="h-answer">
       <span class="eyebrow">結論</span>
       <h2 id="h-answer">コップを傾けて、水流を内壁に当てる</h2>
-      <p class="lede">「近づけるか、離すか」の二択で悩むより、水流を水面に直接落とさないほうがずっと効きます。内壁が水の勢いを受け止め、水は薄い膜になって斜めに滑り込むので、空気を巻き込む穴ができません。下の手順は、自作の流体シミュレーション 3 種類から導いた目安です。</p>
+      <p class="lede">「近づけるか、離すか」の二択で悩むより、水流を水面に直接落とさないほうがずっと効きます。内壁が水の勢いを受け止め、水は薄い膜になって斜めに滑り込むので、空気を巻き込む穴ができません。下の手順は、自作の流体シミュレーション 3 種類から導いた目安です（1〜5 が本命、6 は傾けられないときの次善策）。</p>
       <ol class="steps">
         <li><b>コップを約 30° 傾け、ノズルの真下に「水面より 1 cm ほど上の内壁」が来るように構える。</b>縁とノズルの隙間は 2〜3 cm。ノズルに触れない距離を保ちます。</li>
         <li><b>レバーはそっと開ける（0.2 秒くらいかけて）。</b>勢いよく開けると水柱の先頭に太い塊ができ、それが水面に深い穴を掘ります。</li>
         <li><b>水が増えるにつれてコップを起こしていく。</b>目安は 120 mL で <span data-fill="sched:120">30</span>°、160 mL で <span data-fill="sched:160">20</span>°、200 mL で <span data-fill="sched:200">7</span>°。それ以上は直立で構いません（このころには水面がノズルに近く、落下距離が短いため）。</li>
         <li><b>直立に戻したら、水流をコップの内壁ぎわに落とす。</b>タンブラーは上に向かって少し広がっているので、ぎりぎりまで寄せると水流が壁をかすめて膜になります。</li>
+        <li><b>レバーを閉じるときも、水流を内壁に当てたまま閉じる。</b>水面の真ん中に落としたまま止めると、尻尾が吸い込まれた跡から水滴が真上（ノズルの方向）に一列に飛びます。</li>
         <li><b>傾けられないときは、水面をノズルから 8 cm 以内に、ただし縁はノズルから 2 cm 以上離す。</b>10 cm を超えると、注ぎ始めの水滴がノズルまで跳ね上がり、泡も急に増えます。近づけるぶんには泡はほとんどできないので、下限を決めるのは「コップがノズルに触れないこと」です。</li>
       </ol>
       <div class="tscroll"><table id="strategy-table" aria-label="注ぎ方ごとの比較（120 mL 入りのタンブラーに 150 mL 足す）"></table></div>
@@ -302,8 +303,9 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
 
     <section class="sec" id="stop" aria-labelledby="h-stop" data-needs="dns:stop">
       <span class="eyebrow">おまけ · 注ぎ終わり</span>
-      <h2 id="h-stop">止めたときにも、真ん中から水の柱が立つ</h2>
-      <p>レバーを閉じると水柱の尻尾が水面に落ち、水柱のまわりにできていたくぼみが閉じて、今度は真ん中から上向きの細い柱（Worthington ジェット）が立ちます。DNS では、注いでいる途中で流れを止めると、水面から <span data-fill="stopmax:worth">?</span> mm の柱が立ち、ちぎれた水滴は最高 <span data-fill="stopmax:apex">?</span> cm まで届く計算になりました。止めるときも、水流を壁に当てたままにしておけば、尻尾は膜になって壁を伝うので柱は立ちません。</p>
+      <h2 id="h-stop">止めたときには、真ん中から真上に水滴の列が上がる</h2>
+      <p>レバーを閉じると、水柱の尻尾が細くなりながら水面に吸い込まれ、その跡に真ん中から小さな柱（Worthington ジェット）が立ちます。柱自体は高さ数 mm と小さいのですが、先端からちぎれた粒が一列になって真上、つまりノズルの方向へ飛んでいきます。DNS では、ちぎれた粒が水面から <span data-fill="dns:startup_H7cm_stop150ms:stop_apex_cm">10</span> cm（ノズル〜水面 7 cm のとき）、<span data-fill="dns:startup_H14cm_stop150ms:stop_apex_cm">22</span> cm（14 cm のとき）まで届く計算で、どちらもノズルの高さを超えました。止めるときも水流を内壁に当てたままにしておけば、尻尾は膜になって壁を伝うので、真ん中の柱はできません。</p>
+      <p class="muted" style="font-size:12.5px">軸対称の計算では、水面の波がぴったり軸上に集まるため、真上に飛ぶ粒は実際より強めに出ている可能性があります。</p>
       <div class="render-strip" id="stop-strip"></div>
     </section>
 
