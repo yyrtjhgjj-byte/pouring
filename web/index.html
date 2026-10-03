@@ -247,10 +247,10 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <p class="cap">64 ms の拡大。水柱のまわりを水滴が輪になって上っていきます（軸対称計算なので輪になりますが、実際にはこの輪が無数の粒に分かれ、水柱を取り巻く「水滴の柱」に見えます）。</p>
       </div>
       <div class="kv">
-        <div><span class="k">打ち上がる水滴の最大速度（H = 10 cm）</span><span class="v"><span data-fill="dns:startup_H10cm:w_max">5.0</span> m/s</span></div>
-        <div><span class="k">空気抵抗込みの最高到達点（水面から）</span><span class="v"><span data-fill="dns:startup_H10cm:apex_cm">13</span> cm</span></div>
-        <div><span class="k">注ぎ始めに閉じ込められる空気</span><span class="v"><span data-fill="dns:startup_H10cm:air_mL">2.5</span> mL</span></div>
-        <div><span class="k">同じく H = 4 cm のとき（到達点 / 空気）</span><span class="v"><span data-fill="dns:startup_H4cm:apex_cm">2.3</span> cm / <span data-fill="dns:startup_H4cm:air_mL">0.85</span> mL</span></div>
+        <div><span class="k">ノズル〜水面 7 cm（いちばん高い粒 / 閉じ込める空気）</span><span class="v"><span data-fill="dns:startup_H7cm:apex_cm">2.1</span> cm / <span data-fill="dns:startup_H7cm:air_mL">1.1</span> mL</span></div>
+        <div><span class="k">10 cm</span><span class="v"><span data-fill="dns:startup_H10cm:apex_cm">13</span> cm / <span data-fill="dns:startup_H10cm:air_mL">2.5</span> mL</span></div>
+        <div><span class="k">14 cm</span><span class="v"><span data-fill="dns:startup_H14cm:apex_cm">45</span> cm / <span data-fill="dns:startup_H14cm:air_mL">3.5</span> mL</span></div>
+        <div><span class="k">打ち上がる粒の最大速度（10 cm / 14 cm）</span><span class="v"><span data-fill="dns:startup_H10cm:w_max">5.0</span> / <span data-fill="dns:startup_H14cm:w_max">12</span> m/s</span></div>
       </div>
       <div class="figs">
         <div class="fig"><h3>落下距離が長いほど、水滴は高く飛ぶ</h3><div id="chart-dns"></div>
@@ -262,13 +262,21 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <h3>先頭の塊が小さいと、どうなるか</h3>
         <p class="cap" style="max-width:68ch">同じ H = 10 cm で、先頭の塊を水柱と同じ太さ（レバーをそっと開けた場合に相当）にした計算と比べました。打ち上がる水滴の到達点は <span data-fill="dns:startup_H10cm:apex_cm">13</span> cm → <span data-fill="dns:startup_H10cm_nohead:apex_cm">?</span> cm、閉じ込められる空気は <span data-fill="dns:startup_H10cm:air_mL">2.5</span> mL → <span data-fill="dns:startup_H10cm_nohead:air_mL">?</span> mL。</p>
       </div>
-      <div class="fig" id="movie-box">
-        <h3>注ぎ始めの 0.2 秒（H = 10 cm）</h3>
-        <video controls muted playsinline preload="metadata" poster="media/r3d_H10_62ms.png">
-          <source src="media/startup_H10cm_3d.mp4" type="video/mp4">
-        </video>
-        <p class="cap" id="movie-cap">実時間の約 1/30 のスローモーション（0.2 秒を 6.7 秒で）。手前半分を切り取った 3D 断面です。</p>
+      <div class="figs" id="movie-box">
+        <div class="fig">
+          <h3>注ぎ始めの 0.2 秒（ノズル〜水面 10 cm）</h3>
+          <video controls muted playsinline preload="metadata" poster="media/r3d_H10_62ms.png">
+            <source src="media/startup_H10cm_3d.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="fig">
+          <h3>同じく 14 cm（空洞がコップの底まで届く）</h3>
+          <video controls muted playsinline preload="metadata" poster="media/r3d_H14_98ms.png">
+            <source src="media/startup_H14cm_3d.mp4" type="video/mp4">
+          </video>
+        </div>
       </div>
+      <p class="cap muted" style="font-size:12.5px" id="movie-cap">どちらも実時間の約 1/30 のスローモーション（0.2 秒を 6.7 秒で）。手前半分を切り取った 3D 断面です。14 cm では空洞が水深 4 cm のコップの底まで達し、底から水柱に沿って一気に潰れて、細かい水滴が勢いよく吹き上がります。</p>
     </section>
 
     <section class="sec" id="mist" aria-labelledby="h-mist">
