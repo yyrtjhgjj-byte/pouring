@@ -59,7 +59,12 @@ def main():
                "n_above_nozzle": res.get("n_above_nozzle", 0),
                "stop_apex": res.get("stop_apex", 0.0), "stop_worth_mm": res.get("max_worthington_after_stop", 0.0) * 1e3}
         if "_stop" in d.name:
-            row["worth_mm"] = row["stop_worth_mm"]
+            # 止めた直後は水柱の尻尾が軸上に残るので、尻尾が吸い込まれた後（停止 50 ms 後以降）の盛り上がりだけ数える
+            import csv
+            t_stop = float([l.split()[1] for l in open(d / "params.txt") if l.startswith("jet_stop_time")][0])
+            ts = list(csv.DictReader(open(d / "timeseries.csv")))
+            row["t_stop"] = t_stop
+            row["worth_mm"] = max((float(r["worth_h"]) for r in ts if float(r["t"]) > t_stop + 0.05), default=0.0) * 1e3
             dns["stop"].append(row)
         elif "nohead" in d.name:
             dns["nohead"] = row
