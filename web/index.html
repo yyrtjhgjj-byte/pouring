@@ -256,7 +256,7 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <div><span class="k">打ち上がる粒の最大速度（10 cm / 14 cm）</span><span class="v"><span data-fill="dns:startup_H10cm:w_max">5.0</span> / <span data-fill="dns:startup_H14cm:w_max">12</span> m/s</span></div>
       </div>
       <div class="figs">
-        <div class="fig"><h3>落下距離が長いほど、水滴は高く飛ぶ</h3><div id="chart-dns"></div>
+        <div class="fig"><h3>落下距離が 10 cm を超えると、水滴がノズルの高さまで届く</h3><div id="chart-dns"></div>
           <p class="cap">斜めの線より上の点は、ノズルの高さまで水滴が届く計算。7 cm と 10 cm の間で急に激しくなります。ノズルに水滴が付くと、そこから雑菌が増える原因になります。いちばん高い粒は格子でぎりぎり表せる細かい粒なので、上位 10% の値もあわせて見てください。</p></div>
         <div class="fig"><h3>閉じ込められる空気も増える</h3><div id="chart-dns-air"></div>
           <p class="cap">この空気が後で浮いてきて弾け、次の「細かい飛沫」の元になります。</p></div>
@@ -346,7 +346,7 @@ footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--r
         <li>空気を巻き込み始める落下距離は、水柱が出口でどれだけ乱れているかに強く左右されます（4〜18 cm の幅）。お使いのサーバーで「泡立ち始める高さ」を一度見ておくと確実です。</li>
         <li>DNS は軸対称なので、水柱がねじれたり斜めに折れたりする 3 次元の乱れは含みません。軸から離れた「水滴」は計算上はドーナツ状のリングで、実際にはたくさんの粒に分かれます。0.1 mm より細かい粒も解像できていません。</li>
         <li>ブラウザの装置は 2 次元で、表面張力を入れていません。泡と飛沫の数は半経験式から出した目安で、壁の膜の 3 次元的な広がりも表せません。</li>
-        <li>数値は桁の目安として見てください。「傾けて壁に当てると桁違いに減る」「水面を近づけすぎても離しすぎても良くない」という傾向は、3 つの方法で一致しています。</li>
+        <li>数値は桁の目安として見てください。「傾けて壁に当てると桁違いに減る」「落下距離が 10 cm を超えると急に悪くなる」という傾向は、3 つの方法で一致しています。</li>
       </ul>
     </section>
   </div>

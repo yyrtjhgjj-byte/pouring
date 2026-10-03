@@ -302,7 +302,7 @@
     rows.push(['静止した水滴（半径 2 mm）のラプラス圧', `${V.static_drop.dp_sim.toFixed(2)} Pa`, `${V.static_drop.dp_theory.toFixed(2)} Pa（2σ/R）`, `${(V.static_drop.rel_err * 100).toFixed(2)} %`]);
     rows.push(['同・寄生流（本来ゼロ）', `${(V.static_drop.max_spurious_velocity * 1000).toFixed(2)} mm/s`, '0', `Ca = ${V.static_drop.capillary_number.toExponential(1)}`]);
     rows.push(['振動する水滴の周期（n = 2）', `${V.oscillating_drop.period_sim_ms.toFixed(2)} ms`, `${V.oscillating_drop.period_theory_ms.toFixed(2)} ms（Lamb）`, `${(V.oscillating_drop.rel_err * 100).toFixed(1)} %`]);
-    V.drop_impact.rows.forEach(r => rows.push([`直径 ${V.drop_impact.D_mm} mm の水滴がプールに衝突（Fr = ${r.Fr}）`, `ジェット高さ ${r.jet_height_mm.toFixed(1)} mm`, r.Fr < 60 ? 'ジェットなし（Fr ≲ 60）' : r.Fr < 90 ? '弱いジェット' : 'ジェットあり（Fr ≳ 90）', r.regime === 'jet' ? '出た' : '出ない']));
+    V.drop_impact.rows.forEach(r => rows.push([`直径 ${V.drop_impact.D_mm} mm の水滴がプールに衝突（Fr = ${r.Fr}）`, r.jet_height_mm >= 9.5 ? 'ジェット 10 mm 以上（計算領域の上端）' : `盛り上がり ${r.jet_height_mm.toFixed(1)} mm`, r.Fr < 60 ? 'ジェットなし（Fr ≲ 60）' : r.Fr < 90 ? 'ジェットが出始める（60〜90）' : 'ジェットあり（Fr ≳ 90）', r.regime === 'jet' ? 'ジェットあり' : 'ジェットなし']));
     vt.innerHTML = '<tr><th>テスト</th><th>計算</th><th>理論・実験</th><th>差 / 判定</th></tr>' + rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
   } else if (vt) {
     vt.innerHTML = '<tr><td>検証計算を実行中です。</td></tr>';
@@ -341,7 +341,7 @@
       strip.appendChild(fig);
     });
     const cap = document.getElementById('burst-cap');
-    const parts = bursts.map(b => `半径 ${(b.Rb * 1e3).toFixed(2)} mm の泡では、先頭の粒は半径 ${b.r_sim_um.toFixed(0)} µm・${b.v_sim.toFixed(1)} m/s（式では ${b.r_theory_um.toFixed(0)} µm・${b.v_theory.toFixed(1)} m/s）。DNS のほうが細く速いジェットになりましたが、空気抵抗込みで届く高さは ${b.h_sim_cm.toFixed(1)} cm と ${b.h_theory_cm.toFixed(1)} cm でほぼ同じです`);
-    cap.textContent += ' ' + parts.join('。') + '。泡の初期形状を球で近似していることと、解像度（泡の半径に 48 セル）が速さの差の原因と考えられます。';
+    const parts = bursts.slice().sort((a, b) => b.Rb - a.Rb).map(b => `半径 ${(b.Rb * 1e3).toFixed(2)} mm の泡: 先頭の粒は DNS で半径 ${b.r_sim_um.toFixed(0)} µm・${b.v_sim.toFixed(1)} m/s、式で ${b.r_theory_um.toFixed(0)} µm・${b.v_theory.toFixed(1)} m/s、空気抵抗込みで届く高さは ${b.h_sim_cm.toFixed(1)} cm と ${b.h_theory_cm.toFixed(1)} cm`);
+    cap.textContent += ' ' + parts.join('。') + '。DNS のほうが細く速いジェットになりました（泡の初期形状を球で近似していることと、解像度が泡の半径に 48 セルしかないことが原因と考えられます）が、届く高さはどちらも数 cm までで、結論は変わりません。';
   }
 })();

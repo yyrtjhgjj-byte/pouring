@@ -1,0 +1,50 @@
+{
+ "static_drop": {
+  "R_mm": 2.0,
+  "cells_per_R": 32,
+  "dp_sim": 72.7903060913086,
+  "dp_theory": 72.7,
+  "rel_err": 0.0012421745709572107,
+  "max_spurious_velocity": 0.0008089827606454492,
+  "capillary_number": 1.1127685866085812e-05
+ },
+ "oscillating_drop": {
+  "period_sim_ms": 23.578126040271858,
+  "period_theory_ms": 23.291421064858653,
+  "rel_err": 0.012309466846819994
+ },
+ "drop_impact": {
+  "D_mm": 2.6,
+  "rows": [
+   {
+    "Fr": 40,
+    "U": 1.0098968264134707,
+    "jet_height_mm": 2.3750000000000004,
+    "t_ms": 80.0,
+    "regime": "no jet"
+   },
+   {
+    "Fr": 70,
+    "U": 1.3359679262617048,
+    "jet_height_mm": 9.75,
+    "t_ms": 55.00000000000004,
+    "regime": "jet"
+   },
+   {
+    "Fr": 110,
+    "U": 1.6747244250920805,
+    "jet_height_mm": 9.8125,
+    "t_ms": 27.000000000000018,
+    "regime": "jet"
+   },
+   {
+    "Fr": 160,
+    "U": 2.0197936528269413,
+    "jet_height_mm": 10.0,
+    "t_ms": 32.00000000000002,
+    "regime": "jet"
+   }
+  ],
+  "reference": "Michon, Josserand & Séon, Phys. Rev. Fluids 2, 023601 (2017): Fr≲60 ジェットなし, Fr≳90 高速ジェット"
+ }
+}

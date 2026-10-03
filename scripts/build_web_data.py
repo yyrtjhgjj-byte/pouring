@@ -84,7 +84,9 @@ def main():
         for f in sn.list_snaps(str(d)):
             s_ = sn.read(f)
             a_ = analyze.analyze_snapshot(s_, prm, False)
-            ax = [q for q in a_["drops"] if not q["ring"] and q["w"] > 0 and q["z"] > a_["z_s"] + 0.5 * Rb]
+            # 格子 3 個分より小さい粒は解像できていないので除く
+            ax = [q for q in a_["drops"] if not q["ring"] and q["w"] > 0 and q["z"] > a_["z_s"] + 0.5 * Rb
+                  and q["r_eq"] >= 3 * s_.dx]
             if ax:
                 fd = dict(max(ax, key=lambda q: q["z"]), t=s_.t)
                 break
