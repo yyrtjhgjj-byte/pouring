@@ -135,6 +135,8 @@ def analyze_run(d: Path, every: int = 1) -> dict:
     t_stop = prm.get("jet_stop_time", -1.0)
     rows, all_drops = [], []
     best = {"apex": 0.0}
+    best_stop = {"apex": 0.0}
+    first_axis_drop = None
     for f in files:
         s = snap.read(f)
         jet_on = prm.get("jet_radius", 0) > 0 and (t_stop < 0 or s.t < t_stop)
@@ -152,6 +154,14 @@ def analyze_run(d: Path, every: int = 1) -> dict:
             all_drops.append({**dd, "t": a["t"], "apex": ap})
             if ap > best["apex"]:
                 best = {"apex": ap, "t": a["t"], **dd}
+            if t_stop > 0 and a["t"] >= t_stop and ap > best_stop["apex"]:
+                best_stop = {"apex": ap, "t": a["t"], **dd}
+        # 軸上で最初にちぎれた滴（気泡破裂の先頭液滴）
+        if first_axis_drop is None:
+            ax = [dd for dd in a["drops"] if not dd["ring"] and dd["w"] > 0]
+            if ax:
+                top = max(ax, key=lambda q: q["z"])
+                first_axis_drop = {"t": a["t"], **top}
     # 出力
     import csv
     with open(d / "timeseries.csv", "w", newline="") as fh:
@@ -165,6 +175,9 @@ def analyze_run(d: Path, every: int = 1) -> dict:
         "max_bubble_vol_mm3": max(r["bubble_vol"] for r in rows) * 1e9,
         "final_bubble_vol_mm3": rows[-1]["bubble_vol"] * 1e9,
         "n_drop_detections": len(all_drops),
+        "stop_apex": best_stop["apex"], "stop_drop": best_stop,
+        "max_worthington_after_stop": max((r["worth_h"] for r in rows if t_stop > 0 and r["t"] >= t_stop), default=0.0),
+        "first_axis_drop": first_axis_drop,
         "t_end": rows[-1]["t"],
     }
     with open(d / "analysis.json", "w") as fh:

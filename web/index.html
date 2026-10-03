@@ -27,6 +27,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.75; }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
 h1, h2, h3 { font-family: var(--f-display); font-weight: 800; text-wrap: balance; line-height: 1.3; margin: 0; }
@@ -84,6 +85,66 @@ details.more[open] { display: grid; gap: 10px; }
 #gauge-fill[data-state="bad"] { background: var(--bad); }
 .gauge .lab { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); gap: 8px; }
 #gauge-label { font-weight: 700; color: var(--ink); white-space: nowrap; }
+
+
+/* グラフ */
+:root { --s-blue: #2a78d6; --s-orange: #eb6834; --s-aqua: #1baf7a; --band: rgba(235,104,52,0.08); --grid: #e3e8eb; --axis: #c3ccd2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s-blue: #3987e5; --s-orange: #d95926; --s-aqua: #199e70; --band: rgba(217,89,38,0.12); --grid: #22313c; --axis: #34444f; } }
+:root[data-theme="dark"] { --s-blue: #3987e5; --s-orange: #d95926; --s-aqua: #199e70; --band: rgba(217,89,38,0.12); --grid: #22313c; --axis: #34444f; }
+.chart { display: grid; gap: 6px; min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
+.plot { position: relative; min-width: 0; }
+.plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.plot .grid { stroke: var(--grid); stroke-width: 1; }
+.plot .axis { stroke: var(--axis); stroke-width: 1; }
+.plot .ref { stroke: var(--muted); stroke-width: 1; opacity: 0.7; }
+.plot .cross { stroke: var(--muted); stroke-width: 1; opacity: 0.5; }
+.plot .tick { fill: var(--muted); font: 11px var(--f-mono); }
+.plot .axlab { fill: var(--muted); font: 12px var(--f-body); }
+.plot .ann { fill: var(--muted); font: 11.5px var(--f-body); }
+.plot .dlab { fill: var(--ink); font: 12px var(--f-body); }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 5px; padding: 6px 9px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 14px rgba(0,0,0,0.12); white-space: nowrap; z-index: 2; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+.tableview summary { cursor: pointer; font-size: 12.5px; color: var(--muted); }
+.tscroll { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 100%; }
+th, td { text-align: right; padding: 5px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 500; color: var(--muted); font-size: 12px; }
+
+/* 読み物 */
+.report { display: grid; gap: 56px; margin-top: 56px; }
+.sec { display: grid; gap: 18px; }
+.sec > p, .sec > ol, .sec > ul { max-width: 68ch; }
+.sec h2 + p { font-size: 16px; }
+.answer { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: grid; gap: 16px; }
+.answer h2 { font-size: clamp(24px, 3vw, 32px); }
+ol.steps { margin: 0; padding-left: 1.4em; display: grid; gap: 10px; max-width: 70ch; }
+ol.steps li::marker { font-family: var(--f-mono); color: var(--accent); }
+ol.steps b { font-weight: 700; }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 22px 28px; }
+.fig { display: grid; gap: 8px; min-width: 0; align-content: start; }
+.fig h3 { font-size: 16px; }
+.fig .cap { font-size: 13px; color: var(--muted); max-width: 62ch; }
+.render-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+@media (max-width: 760px) { .render-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.render-strip figure { margin: 0; display: grid; gap: 4px; }
+.render-strip img { border-radius: 4px; display: block; width: 100%; height: auto; background: var(--scene); }
+.render-strip figcaption { font-size: 12px; color: var(--muted); }
+video { width: 100%; max-width: 760px; border-radius: 6px; background: var(--scene); display: block; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 22px; }
+.kv div { border-top: 1px solid var(--rule); padding-top: 6px; }
+.kv .k { font-size: 12px; color: var(--muted); display: block; }
+.kv .v { font-family: var(--f-mono); font-size: 18px; }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; max-width: 68ch; }
+.tier { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.tier > div { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.tier .tag { font-family: var(--f-mono); font-size: 11.5px; color: var(--accent); letter-spacing: 0.06em; }
+.tier p { font-size: 13.5px; }
+code { font-family: var(--f-mono); font-size: 0.9em; background: var(--chip); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
 
 @media (prefers-reduced-motion: reduce) { #gauge-fill { transition: none; } }
 </style>
@@ -153,7 +214,138 @@ details.more[open] { display: grid; gap: 10px; }
       </details>
     </div>
   </section>
+
+  <div class="report">
+    <section class="sec answer" id="answer" aria-labelledby="h-answer">
+      <span class="eyebrow">結論</span>
+      <h2 id="h-answer">コップを傾けて、水流を内壁に当てる</h2>
+      <p class="lede">「近づけるか、離すか」の二択で悩むより、水流を水面に直接落とさないほうがずっと効きます。内壁が水の勢いを受け止め、水は薄い膜になって斜めに滑り込むので、空気を巻き込む穴ができません。下の手順は、自作の流体シミュレーション 3 種類から導いた目安です。</p>
+      <ol class="steps">
+        <li><b>コップを約 30° 傾け、ノズルの真下に「水面より 1 cm ほど上の内壁」が来るように構える。</b>縁とノズルの隙間は 2〜3 cm。ノズルに触れない距離を保ちます。</li>
+        <li><b>レバーはそっと開ける（0.2 秒くらいかけて）。</b>勢いよく開けると水柱の先頭に太い塊ができ、それが水面に深い穴を掘ります。</li>
+        <li><b>水が増えるにつれてコップを起こしていく。</b>目安は 120 mL で <span data-fill="sched:120">30</span>°、160 mL で <span data-fill="sched:160">20</span>°、200 mL で <span data-fill="sched:200">7</span>°。それ以上は直立で構いません（このころには水面がノズルに近く、落下距離が短いため）。</li>
+        <li><b>直立に戻したら、水流をコップの内壁ぎわに落とす。</b>タンブラーは上に向かって少し広がっているので、ぎりぎりまで寄せると水流が壁をかすめて膜になります。</li>
+        <li><b>傾けられないときは、水面をノズルから <span data-fill="model:Hstar">10</span> cm 以内に保つ。</b>それより遠いと、水柱が速く、表面も波打って、空気を急に巻き込み始めます。</li>
+      </ol>
+      <div class="tscroll"><table id="strategy-table" aria-label="注ぎ方ごとの比較（120 mL 入りのタンブラーに 150 mL 足す）"></table></div>
+      <p class="muted" style="font-size:12.5px">表は半経験モデルの計算値（120 mL 入りの 335 mL タンブラーに、流量 1.5 L/分で 150 mL 足す場合）。数字そのものより桁の違いを見てください。</p>
+    </section>
+
+    <section class="sec" id="column" aria-labelledby="h-column">
+      <span class="eyebrow">現象 1 · 水滴の柱</span>
+      <h2 id="h-column">注ぎ始めの「水滴の柱」は、水中にできた空洞が潰れる反動</h2>
+      <p>注ぎ始めの水の先端は、表面張力で丸まった少し太い塊になっています。これが水面に突っ込むと深いクレーターを掘り、続く水柱のまわりに空気の筒が伸びます。数十ミリ秒後、この筒が水圧で水柱に向かって一気に潰れ、ぶつかった所から細かい水滴が水柱に沿って上向きに噴き出します。続いて水柱の根元に水の「襟」がせり上がります。潰れた筒は空気を閉じ込めたまま、たくさんの泡になります。</p>
+      <div class="render-strip" id="render-strip">
+        <figure><img src="media/r3d_H10_08ms.png" alt="H 10 cm、8 ミリ秒後。先頭の水塊が水面にクレーターを作り始める" loading="lazy"><figcaption>8 ms · 先頭の塊がクレーターを掘る</figcaption></figure>
+        <figure><img src="media/r3d_H10_30ms.png" alt="30 ミリ秒後。水柱のまわりに深い空気の筒ができている" loading="lazy"><figcaption>30 ms · 水柱のまわりに空気の筒</figcaption></figure>
+        <figure><img src="media/r3d_H10_62ms.png" alt="62 ミリ秒後。空気の筒が潰れ、水柱の根元から水滴が上へ打ち出される" loading="lazy"><figcaption>62 ms · 筒が潰れて水滴が上へ</figcaption></figure>
+        <figure><img src="media/r3d_H10_150ms.png" alt="150 ミリ秒後。閉じ込められた空気が泡になって水中に残る" loading="lazy"><figcaption>150 ms · 閉じ込められた空気が泡に</figcaption></figure>
+      </div>
+      <p class="muted" style="font-size:12.5px">軸対称 DNS（ノズル〜水面 10 cm、0.1 mm 格子）を軸まわりに回転させ、手前半分を切り取って描いたもの。切り口の濃い青が水、白い穴が空気です。</p>
+      <div class="fig">
+        <img src="media/r3d_H10_close64ms.png" alt="64 ミリ秒後の拡大。水柱のまわりをリング状の水滴が上へ飛び、水柱の根元に水の襟ができている" loading="lazy" style="border-radius:6px;max-width:760px;width:100%">
+        <p class="cap">64 ms の拡大。水柱のまわりを水滴が輪になって上っていきます（軸対称計算なので輪になりますが、実際にはこの輪が無数の粒に分かれ、水柱を取り巻く「水滴の柱」に見えます）。</p>
+      </div>
+      <div class="kv">
+        <div><span class="k">打ち上がる水滴の最大速度（H = 10 cm）</span><span class="v"><span data-fill="dns:startup_H10cm:w_max">5.0</span> m/s</span></div>
+        <div><span class="k">空気抵抗込みの最高到達点（水面から）</span><span class="v"><span data-fill="dns:startup_H10cm:apex_cm">13</span> cm</span></div>
+        <div><span class="k">注ぎ始めに閉じ込められる空気</span><span class="v"><span data-fill="dns:startup_H10cm:air_mL">2.5</span> mL</span></div>
+        <div><span class="k">同じく H = 4 cm のとき（到達点 / 空気）</span><span class="v"><span data-fill="dns:startup_H4cm:apex_cm">2.3</span> cm / <span data-fill="dns:startup_H4cm:air_mL">0.85</span> mL</span></div>
+      </div>
+      <div class="figs">
+        <div class="fig"><h3>落下距離が長いほど、水滴は高く飛ぶ</h3><div id="chart-dns"></div>
+          <p class="cap">斜めの線より上の点は、ノズルの高さまで水滴が届く計算。ノズルに水滴が付くと、そこから雑菌が増える原因になります。</p></div>
+        <div class="fig"><h3>閉じ込められる空気も増える</h3><div id="chart-dns-air"></div>
+          <p class="cap">この空気が後で浮いてきて弾け、次の「細かい飛沫」の元になります。</p></div>
+      </div>
+      <div class="fig" id="lever-box" data-needs="dns:startup_H10cm_nohead">
+        <h3>先頭の塊が小さいと、どうなるか</h3>
+        <p class="cap" style="max-width:68ch">同じ H = 10 cm で、先頭の塊を水柱と同じ太さ（レバーをそっと開けた場合に相当）にした計算と比べました。打ち上がる水滴の到達点は <span data-fill="dns:startup_H10cm:apex_cm">13</span> cm → <span data-fill="dns:startup_H10cm_nohead:apex_cm">?</span> cm、閉じ込められる空気は <span data-fill="dns:startup_H10cm:air_mL">2.5</span> mL → <span data-fill="dns:startup_H10cm_nohead:air_mL">?</span> mL。</p>
+      </div>
+      <div class="fig" id="movie-box">
+        <h3>注ぎ始めの 0.2 秒（H = 10 cm）</h3>
+        <video controls muted playsinline preload="metadata" poster="media/r3d_H10_62ms.png">
+          <source src="media/startup_H10cm_3d.mp4" type="video/mp4">
+        </video>
+        <p class="cap" id="movie-cap">実時間の約 1/30 のスローモーション（0.2 秒を 6.7 秒で）。手前半分を切り取った 3D 断面です。</p>
+      </div>
+    </section>
+
+    <section class="sec" id="mist" aria-labelledby="h-mist">
+      <span class="eyebrow">現象 2 · 細かい飛沫</span>
+      <h2 id="h-mist">水面の細かい飛沫は、泡が弾けるときに打ち上がる粒</h2>
+      <p>水面で細かく跳ねているのは、巻き込まれた気泡が浮いてきて破裂するときに、穴の底から立つ細いジェットがちぎれた粒です（炭酸飲料の上に漂うミストと同じ仕組み）。半径 0.1〜1 mm の泡からは、直径 20〜400 µm ほどの粒が 1〜10 m/s で打ち出されます。ただ小さい粒ほど空気抵抗ですぐ止まるので、届くのは高くても 6 cm ほどです。</p>
+      <p>泡ができるかどうかは、「水面に突っ込む速さ」と「空気を巻き込み始める速さ」の比べっこで決まります。ノズルから離すほど水柱は重力で速くなり、同時に表面の小さなくびれ（Rayleigh–Plateau 不安定）も育って凸凹になります。凸凹な水柱ほど低い速さで空気を巻き込むので、二つの線はある落下距離で交差します。</p>
+      <div class="figs">
+        <div class="fig"><h3>落下距離 <span data-fill="model:Hstar">10</span> cm で巻き込みが始まる</h3><div id="chart-cross"></div>
+          <p class="cap">交点の位置は、水柱が出口でどれだけ乱れているかで大きく動きます（静かなサーバーなら約 <span data-fill="model:HstarQuiet">18</span> cm、ボトルが「ゴボッ」と脈打つ荒いものなら約 <span data-fill="model:HstarNoisy">4</span> cm）。水温や流量の影響は 1 cm 程度です。</p></div>
+        <div class="fig"><h3>内壁に当てれば、遠くからでも泡はほぼできない</h3><div id="chart-bubbles"></div>
+          <p class="cap">縦軸は対数。まっすぐ落とすと、交点を越えたところで泡の数が数万倍に跳ね上がります。</p></div>
+        <div class="fig"><h3>飛沫が届く高さは、空気抵抗で頭打ち</h3><div id="chart-jetdrops"></div>
+          <p class="cap">泡が弾けたときの一番上の粒（Deike ほか 2018 の速度則と、Gañán-Calvo 型の粒径則）を空気抵抗つきで飛ばした高さ。だから水面がノズルに近すぎると、この粒がノズルに届きます。</p></div>
+      </div>
+      <div class="fig" id="burst-box" data-needs="dns:burst">
+        <h3>泡の破裂も DNS で直接解いた</h3>
+        <div class="render-strip" id="burst-strip"></div>
+        <p class="cap" id="burst-cap">水面の泡が弾けると、穴の底から細いジェットが立ち、先端がちぎれて粒になります。</p>
+      </div>
+      <p class="callout">まっすぐ注ぐ場合の妥協点は、<b>水面をノズルから 6〜<span data-fill="model:Hstar">10</span> cm</b> に置くこと。6 cm より近いと弾けた飛沫がノズルに届きうるうえ、縁がノズルに触れやすくなり、<span data-fill="model:Hstar">10</span> cm より遠いと泡が急に増えます。注ぎ始めの水滴の柱も、落下距離が短いほど低くなります。</p>
+    </section>
+
+    <section class="sec" id="stop" aria-labelledby="h-stop" data-needs="dns:stop">
+      <span class="eyebrow">おまけ · 注ぎ終わり</span>
+      <h2 id="h-stop">止めたときにも、真ん中から水の柱が立つ</h2>
+      <p>レバーを閉じると水柱の尻尾が水面に落ち、水柱のまわりにできていたくぼみが閉じて、今度は真ん中から上向きの細い柱（Worthington ジェット）が立ちます。DNS では、注いでいる途中で流れを止めると、水面から <span data-fill="stopmax:worth">?</span> mm の柱が立ち、ちぎれた水滴は最高 <span data-fill="stopmax:apex">?</span> cm まで届く計算になりました。止めるときも、水流を壁に当てたままにしておけば、尻尾は膜になって壁を伝うので柱は立ちません。</p>
+      <div class="render-strip" id="stop-strip"></div>
+    </section>
+
+    <section class="sec" id="tilt" aria-labelledby="h-tilt">
+      <span class="eyebrow">なぜ傾けると効くのか</span>
+      <h2 id="h-tilt">壁が勢いを受け止め、膜が斜めに滑り込む</h2>
+      <ul>
+        <li>水柱が壁に当たると、壁に垂直な速さの成分は横への広がりに変わり、残りは壁に沿った流れになります。濡れた壁への衝突で粒が飛ぶかどうかの指標（K = We<sup>1/2</sup> Re<sup>1/4</sup>）は 50〜100 程度で、粒が飛び始める約 2000 よりずっと小さいので、壁で跳ねることはありません。</li>
+        <li>膜は壁に沿って斜めに水面へ入るため、水面に垂直に突っ込む速さが小さくなります（30° 傾けると約 2 割減）。</li>
+        <li>水柱表面の凸凹は、壁に付いた時点でならされます。空気を巻き込む引き金になる凸凹がなくなります。</li>
+        <li>膜の裏側は壁なので、水柱のまわりにできたような空気の筒がそもそもできません。注ぎ始めの塊も壁に当たって膜に広がるので、水滴の柱も立ちません。</li>
+      </ul>
+      <div class="fig"><h3>水が増えたら、傾きを戻していく</h3><div id="chart-schedule"></div>
+        <p class="cap">傾けすぎると縁からこぼれ、当てる位置も縁に近づきます。上限は「水面が一番低い縁から 8 mm 以上下」「当たる点が縁から 1.5 cm 以上下で、水面より上」の条件から計算しました。</p></div>
+    </section>
+
+    <section class="sec" id="engine" aria-labelledby="h-engine">
+      <span class="eyebrow">シミュレーションの中身</span>
+      <h2 id="h-engine">3 段構えで解いた</h2>
+      <div class="tier">
+        <div><span class="tag">1 · 軸対称 DNS</span><h3>注ぎ始めの数百ミリ秒を、表面張力まで直接解く</h3>
+          <p>C と OpenMP で書いた二相流ソルバー。PLIC-VOF（Weymouth–Yue の質量保存型移流）、高さ関数による曲率、balanced-force の表面張力、密度比 830 の圧力方程式をマルチグリッド前処理つき共役勾配法で解きます。0.1 mm 格子・22 万セル、1 ケース 1 万 5 千ステップ。</p></div>
+        <div><span class="tag">2 · 半経験モデル</span><h3>あらゆる注ぎ方を一瞬で評価する</h3>
+          <p>落下する水柱の加速と細り、表面の凸凹の成長、注ぎ始めの塊（粘着粒子モデル）、空気の巻き込み、泡の大きさ、泡が弾けたときの粒、空気抵抗つきの弾道、傾けたコップの壁の膜流れとこぼれ限界を、文献の式でつないだ Python パッケージ。</p></div>
+        <div><span class="tag">3 · ブラウザ 2D FLIP</span><h3>上の装置。実寸で動く流体と、格子より小さい泡と粒</h3>
+          <p>粒子と格子を組み合わせた FLIP 法でコップと水柱を解き、泡や飛沫のような格子より小さい現象は 2 の式で発生させています。</p></div>
+      </div>
+      <h3>検証</h3>
+      <div class="tscroll"><table id="validation-table" aria-label="DNS ソルバーの検証結果"></table></div>
+    </section>
+
+    <section class="sec" id="limits" aria-labelledby="h-limits">
+      <span class="eyebrow">注意</span>
+      <h2 id="h-limits">このシミュレーションで言えないこと</h2>
+      <ul>
+        <li>空気を巻き込み始める落下距離は、水柱が出口でどれだけ乱れているかに強く左右されます（4〜18 cm の幅）。お使いのサーバーで「泡立ち始める高さ」を一度見ておくと確実です。</li>
+        <li>DNS は軸対称なので、水柱がねじれたり斜めに折れたりする 3 次元の乱れは含みません。軸から離れた「水滴」は計算上はドーナツ状のリングで、実際にはたくさんの粒に分かれます。0.1 mm より細かい粒も解像できていません。</li>
+        <li>ブラウザの装置は 2 次元で、表面張力を入れていません。泡と飛沫の数は半経験式から出した目安で、壁の膜の 3 次元的な広がりも表せません。</li>
+        <li>数値は桁の目安として見てください。「傾けて壁に当てると桁違いに減る」「水面を近づけすぎても離しすぎても良くない」という傾向は、3 つの方法で一致しています。</li>
+      </ul>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <span>コードと計算結果: リポジトリ <code>yyrtjhgjj-byte/pouring</code> のブランチ <code>claude/pouring-grand-sim</code>（<code>dns/</code> DNS ソルバー、<code>pourphys/</code> 半経験モデル、<code>web/</code> この装置）。</span>
+    <span>主な文献: Zhu, Oguz &amp; Prosperetti (2000) JFM 404; Kiger &amp; Duncan (2012) Annu. Rev. Fluid Mech.; Michon, Josserand &amp; Séon (2017) PRFluids 2; Deike ほか (2018) PRFluids 3; Berny ほか (2020) PRFluids 5; Blanchard (1989) JGR; Weymouth &amp; Yue (2010) JCP; Popinet (2009) JCP.</span>
+  </footer>
 </div>
 
+<script src="data.js"></script>
 <script src="sim.js"></script>
 <script src="app.js"></script>
+<script src="report.js"></script>

@@ -108,8 +108,9 @@
           pts.forEach(p => el('circle', { cx: X(p[0]), cy: Y(clipY(p[1])), r: 5, fill: `var(${s.color})`, stroke: 'var(--panel)', 'stroke-width': 2 }, svg));
         }
         if (s.label !== false) {
-          const p = pts[pts.length - 1];
-          const t = el('text', { x: X(p[0]) + 8, y: Y(clipY(p[1])) + 4 + (s.labelDy || 0), class: 'dlab' }, svg);
+          const start = s.labelAt === 'start';
+          const p = start ? pts[0] : pts[pts.length - 1];
+          const t = el('text', { x: X(p[0]) + (start ? 10 : 8), y: Y(clipY(p[1])) + (start ? -8 : 4) + (s.labelDy || 0), class: 'dlab' }, svg);
           t.textContent = s.label || s.name;
         }
       });
@@ -184,9 +185,9 @@
     const P = D.model.plunge, W30 = D.model.wall['30'], W4 = D.model.wall['4'];
     lineChart(host2, {
       series: [
-        { name: 'まっすぐ水面に落とす', color: '--s-orange', points: P.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '水面に直撃' },
-        { name: '直立のまま内壁をかすめる', color: '--s-aqua', points: W4.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '内壁かすめ', labelDy: -8 },
-        { name: '30°傾けて内壁に当てる', color: '--s-blue', points: W30.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '30°傾け', labelDy: 8 },
+        { name: 'まっすぐ水面に落とす', color: '--s-orange', points: P.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '水面に直撃', labelDy: -7 },
+        { name: '直立のまま内壁をかすめる', color: '--s-aqua', points: W4.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '内壁かすめ', labelDy: 5 },
+        { name: '30°傾けて内壁に当てる', color: '--s-blue', points: W30.map(r => [r.H * 100, Math.max(r.bubble_rate, 0.1)]), label: '30°傾け', labelDy: 12 },
       ],
       xDomain: [2, 30], yDomain: [0.1, 1e7], logY: true,
       xLabel: '落下距離 H [cm]（壁沿いは壁に当たるまで）', yLabel: 'できる気泡 [個/秒]',
@@ -201,8 +202,8 @@
     const S = D.model.schedule.filter(r => r.theta_max !== null);
     lineChart(host3, {
       series: [
-        { name: 'こぼさず内壁を狙える上限', color: '--s-blue', points: S.map(r => [r.V, r.theta_max]), label: '上限' },
-        { name: 'おすすめ（上限 − 5°）', color: '--s-orange', points: S.map(r => [r.V, r.theta_rec]), label: 'おすすめ' },
+        { name: 'こぼさず内壁を狙える上限', color: '--s-blue', points: S.map(r => [r.V, r.theta_max]), label: '上限', labelAt: 'start' },
+        { name: 'おすすめ（上限 − 5°）', color: '--s-orange', points: S.map(r => [r.V, r.theta_rec]), label: 'おすすめ', labelAt: 'start', labelDy: 22 },
       ],
       xDomain: [40, 300], yDomain: [0, 50], xLabel: `コップの中の水 [mL]（${D.model.cup.volume_mL.toFixed(0)} mL のタンブラー）`, yLabel: '傾き [°]',
       band: { x0: S[S.length - 1].V + 5, x1: 300, label: '直立でよい（落下距離が短い）' },
@@ -253,5 +254,92 @@
       unitX: ' cm', unitY: ' mL', xFmt: v => v.toFixed(0), yDigits: 2, aria: 'DNS の巻き込み空気量', rightPad: 24,
       table: { xs: R.map(r => r.H * 100) },
     });
+  }
+
+  // ------------------------------------------------------------------ 本文中の数値
+  const dnsRow = (name) => [...(D.dns.startup || []), ...(D.dns.stop || []), D.dns.nohead].filter(Boolean).find(r => r.name === name);
+  const fillers = {
+    sched: (V) => { const r = D.model.schedule.find(q => Math.abs(q.V - +V) < 1e-6); return r && r.theta_rec != null ? r.theta_rec.toFixed(0) : '0'; },
+    model: (k) => {
+      if (k === 'Hstar') return (D.model.H_star * 100).toFixed(0);
+      if (k === 'HstarQuiet') return (D.model.noise[0].H_star * 100).toFixed(0);
+      if (k === 'HstarNoisy') return (D.model.noise[D.model.noise.length - 1].H_star * 100).toFixed(0);
+      return '';
+    },
+    dns: (name, field) => {
+      const r = dnsRow(name);
+      if (!r) return null;
+      if (field === 'apex_cm') { const v = r.apex * 100; return v < 10 ? v.toFixed(1) : v.toFixed(0); }
+      if (field === 'w_max') return r.w_max.toFixed(1);
+      if (field === 'air_mL') return r.air_mL < 1 ? r.air_mL.toFixed(2) : r.air_mL.toFixed(1);
+      if (field === 'U') return r.U.toFixed(2);
+      return String(r[field]);
+    },
+  };
+  document.querySelectorAll('[data-fill]').forEach(e => {
+    const [kind, ...args] = e.dataset.fill.split(':');
+    const f = fillers[kind];
+    const v = f ? f(...args) : null;
+    if (v != null && v !== '') e.textContent = v;
+  });
+
+  // ------------------------------------------------------------------ 注ぎ方の比較表
+  const st = document.getElementById('strategy-table');
+  if (st && D.model.strategies) {
+    const rate = (v) => v >= 1e4 ? human(v) : v >= 10 ? Math.round(v).toString() : v.toFixed(1);
+    st.innerHTML = '<tr><th>注ぎ方</th><th>最初に当たる面</th><th>落下距離</th><th>水面に突っ込む速さ / 巻き込み開始</th><th>弾ける飛沫</th><th>ノズルに届く飛沫</th></tr>' +
+      D.model.strategies.map(r => `<tr><td>${r.name}</td><td>${r.mode === 'wall' ? '内壁' : '水面'}</td><td>${(r.H * 100).toFixed(1)} cm</td>` +
+        `<td>${r.Ueff.toFixed(2)} / ${r.Ve.toFixed(2)} m/s</td><td>${rate(r.drop_rate)} 個/秒</td><td>${r.nozzle_hits < 0.01 ? 'ほぼ 0' : r.nozzle_hits.toFixed(2) + ' 個/回'}</td></tr>`).join('');
+  }
+
+  // ------------------------------------------------------------------ 検証表
+  const vt = document.getElementById('validation-table');
+  const V = D.dns.validation || {};
+  if (vt && V.static_drop) {
+    const rows = [];
+    rows.push(['静止した水滴（半径 2 mm）のラプラス圧', `${V.static_drop.dp_sim.toFixed(2)} Pa`, `${V.static_drop.dp_theory.toFixed(2)} Pa（2σ/R）`, `${(V.static_drop.rel_err * 100).toFixed(2)} %`]);
+    rows.push(['同・寄生流（本来ゼロ）', `${(V.static_drop.max_spurious_velocity * 1000).toFixed(2)} mm/s`, '0', `Ca = ${V.static_drop.capillary_number.toExponential(1)}`]);
+    rows.push(['振動する水滴の周期（n = 2）', `${V.oscillating_drop.period_sim_ms.toFixed(2)} ms`, `${V.oscillating_drop.period_theory_ms.toFixed(2)} ms（Lamb）`, `${(V.oscillating_drop.rel_err * 100).toFixed(1)} %`]);
+    V.drop_impact.rows.forEach(r => rows.push([`直径 ${V.drop_impact.D_mm} mm の水滴がプールに衝突（Fr = ${r.Fr}）`, `ジェット高さ ${r.jet_height_mm.toFixed(1)} mm`, r.Fr < 60 ? 'ジェットなし（Fr ≲ 60）' : r.Fr < 90 ? '弱いジェット' : 'ジェットあり（Fr ≳ 90）', r.regime === 'jet' ? '出た' : '出ない']));
+    vt.innerHTML = '<tr><th>テスト</th><th>計算</th><th>理論・実験</th><th>差 / 判定</th></tr>' + rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+  } else if (vt) {
+    vt.innerHTML = '<tr><td>検証計算を実行中です。</td></tr>';
+  }
+
+  // ------------------------------------------------------------------ データがまだない節は隠す
+  document.querySelectorAll('[data-needs]').forEach(e => {
+    const [kind, a] = e.dataset.needs.split(':');
+    let ok = false;
+    if (kind === 'dns' && a === 'stop') ok = (D.dns.stop || []).length > 0;
+    else if (kind === 'dns' && a === 'burst') ok = (D.dns.burst || []).length > 0;
+    else if (kind === 'dns') ok = !!dnsRow(a);
+    e.hidden = !ok;
+  });
+  // 注ぎ終わり
+  const stops = D.dns.stop || [];
+  if (stops.length) {
+    const wmax = Math.max(...stops.map(r => r.worth_mm));
+    const amax = Math.max(...stops.map(r => r.stop_apex ?? r.apex));
+    document.querySelectorAll('[data-fill="stopmax:worth"]').forEach(e => e.textContent = wmax.toFixed(0));
+    document.querySelectorAll('[data-fill="stopmax:apex"]').forEach(e => e.textContent = (amax * 100).toFixed(1));
+    const strip = document.getElementById('stop-strip');
+    (D.dns.stop_frames || []).forEach(f => {
+      const fig = document.createElement('figure');
+      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}" loading="lazy"><figcaption>${f.cap}</figcaption>`;
+      strip.appendChild(fig);
+    });
+  }
+  // 泡の破裂
+  const bursts = D.dns.burst || [];
+  if (bursts.length) {
+    const strip = document.getElementById('burst-strip');
+    (D.dns.burst_frames || []).forEach(f => {
+      const fig = document.createElement('figure');
+      fig.innerHTML = `<img src="${f.src}" alt="${f.alt}" loading="lazy"><figcaption>${f.cap}</figcaption>`;
+      strip.appendChild(fig);
+    });
+    const cap = document.getElementById('burst-cap');
+    const parts = bursts.map(b => `半径 ${(b.Rb * 1e3).toFixed(2)} mm の泡: 先頭の粒の速さ ${b.v_sim.toFixed(1)} m/s（Deike ほかの式 ${b.v_theory.toFixed(1)} m/s）、粒の半径 ${b.r_sim_um.toFixed(0)} µm（式 ${b.r_theory_um.toFixed(0)} µm）`);
+    cap.textContent += ' ' + parts.join('。') + '。';
   }
 })();

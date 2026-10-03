@@ -17,6 +17,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams["font.family"] = ["IPAGothic", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
 from matplotlib.colors import LinearSegmentedColormap
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -43,7 +45,7 @@ def frame(s: snap.Snap, ax, meta: dict | None = None, vmax: float = 2.5, zoom=No
     right = rgba_c * c[..., None] + air * (1 - c[..., None])
     img[:, :half] = left[:, :half]
     img[:, half:] = right[:, half:]
-    ax.imshow(img, extent=ext, interpolation="bilinear")
+    ax.imshow(np.clip(img, 0, 1), extent=ext, interpolation="bilinear")
     r = np.concatenate([-s.r[::-1], s.r]) * 1e3
     z = s.z * 1e3
     ax.contour(r, z, c[::-1, :], levels=[0.5], colors="#0a2540", linewidths=0.5)
